@@ -22,7 +22,7 @@ A multi-engine search API built with Ruby on Rails 8, inspired by [SerpApi](http
 ### Installation
 
 ```bash
-git clone https://github.com/<your-username>/mini-serpapi.git
+git clone https://github.com/Usukhbayar418/mini-serpapi.git
 cd mini-serpapi
 bundle install
 ```
@@ -146,6 +146,6 @@ Request → SearchController → SearchService → Scraper → JSON Response
 
 ## Author
 
-**Dino** — [github.com/your-username](https://github.com/your-username)
+**Dino** — [github.com/Usukhbayar418](https://github.com/Usukhbayar418)
 
 Built as part of an 8-month journey to become a Junior Fullstack Engineer, inspired by SerpApi's core functionality.
