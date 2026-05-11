@@ -7,6 +7,9 @@ gem "puma", ">= 5.0"
 gem 'httparty'
 gem 'nokogiri'
 gem 'dotenv-rails'
+gem "rspec-rails"
+gem "webmock"
+gem "factory_bot_rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 # Use Redis adapter to run Action Cable in production
