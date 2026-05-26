@@ -9,8 +9,8 @@ module Api
                     return render json: {error: 'q parameter is required'}, status: 400
                 end
 
-                unless %w[google duckduckgo gogo news brave].include?(engine)
-                    return render json: {error: 'engine must be one of: brave, duckduckgo, google, gogo, news'}, status: 400
+                unless %w[google duckduckgo gogo news brave images].include?(engine)
+                    return render json: {error: 'engine must be one of: brave, duckduckgo, google, gogo, news, images'}, status: 400
                 end
 
                 result = SearchService.new(query, engine).search

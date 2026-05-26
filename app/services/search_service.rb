@@ -17,6 +17,8 @@ class SearchService
     case @engine
     when 'brave'
       scrape_brave
+    when 'images'
+      scrape_brave_images
     when 'google', 'bing'
       scrape_duckduckgo
     when 'duckduckgo'
@@ -56,6 +58,37 @@ class SearchService
     engine: 'brave',
     total_results: results.count,
     organic_results: results
+  }
+end
+
+def scrape_brave_images 
+  url = "https://api.search.brave.com/res/v1/images/search?q=#{URI.encode_www_form_component(@query)}&count=10"
+  response = HTTParty.get(url, headers: HEADERS.merge({
+    'Accept' => 'application/json',
+    'X-Subscription-Token' => ENV['BRAVE_API_KEY']
+  }))
+
+  data = response.parsed_response
+  results_raw = data['results'] || []
+
+  results = results_raw.each_with_index.map do |item, i|
+    {
+      position: i + 1,
+      title: item['title'],
+      image: item.dig('properties', 'url'),
+      thumbnail: item.dig('thumbnail', 'src'),
+      source_page: item['url'],
+      source: item['source'],
+      width: item.dig('properties', 'width'),
+      height: item.dig('properties', 'height'),
+    }
+  end
+
+  {
+    query: @query,
+    engine: 'images',
+    total_results: results.count,
+    image_results: results
   }
 end
 
