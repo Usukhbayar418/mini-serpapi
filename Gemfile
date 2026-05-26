@@ -10,6 +10,7 @@ gem 'dotenv-rails'
 gem "rspec-rails"
 gem "webmock"
 gem "factory_bot_rails"
+gem "rack-attack"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 # Use Redis adapter to run Action Cable in production
