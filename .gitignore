@@ -24,3 +24,7 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+
+# Local environment variables (API keys, secrets)
+.env
+.env.local
