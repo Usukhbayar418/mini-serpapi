@@ -1,6 +1,7 @@
 module Api 
     module V1
         class SearchController < ApplicationController
+            before_action :authenticate_api_key!
             def index
                 query = params[:q]
                 engine = params[:engine] || 'brave'
@@ -18,6 +19,16 @@ module Api
                 
             rescue StandardError => e
                 render json: {error: e.message}, status: 500
+            end
+
+            private
+            
+            def authenticate_api_key!
+                api_key = request.headers['X-API-Key']
+                valid_keys = ENV['API_KEYS'].to_s.split(',').map(&:strip)
+                unless valid_keys.include?(api_key)
+                    render json: { error: 'Unauthorized' }, status: :unauthorized
+                end
             end
         end
     end
