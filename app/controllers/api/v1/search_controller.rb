@@ -3,14 +3,14 @@ module Api
         class SearchController < ApplicationController
             def index
                 query = params[:q]
-                engine = params[:engine] || 'duckduckgo'
+                engine = params[:engine] || 'brave'
 
                 if query.blank? 
                     return render json: {error: 'q parameter is required'}, status: 400
                 end
 
-                unless %w[google duckduckgo gogo news].include?(engine)
-                    return render json: {error: 'engine must be google or duckduckgo'}, status: 400
+                unless %w[google duckduckgo gogo news brave].include?(engine)
+                    return render json: {error: 'engine must be one of: brave, duckduckgo, google, gogo, news'}, status: 400
                 end
 
                 result = SearchService.new(query, engine).search

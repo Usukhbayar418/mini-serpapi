@@ -8,13 +8,15 @@ class SearchService
     'Accept-Language' => 'en-US,en;q=0.9'
   }.freeze
 
-  def initialize(query, engine = 'duckduckgo')
+  def initialize(query, engine = 'brave')
     @query = query
     @engine = engine
   end
 
   def search
     case @engine
+    when 'brave'
+      scrape_brave
     when 'google', 'bing'
       scrape_duckduckgo
     when 'duckduckgo'
@@ -29,6 +31,33 @@ class SearchService
   end
 
   private
+
+  def scrape_brave
+  url = "https://api.search.brave.com/res/v1/web/search?q=#{URI.encode_www_form_component(@query)}&count=10"
+  response = HTTParty.get(url, headers: HEADERS.merge({
+    'Accept' => 'application/json',
+    'X-Subscription-Token' => ENV['BRAVE_API_KEY']
+  }))
+  
+  data = response.parsed_response
+  web_results = data.dig('web', 'results') || []
+  
+  results = web_results.each_with_index.map do |item, i|
+    {
+      position: i + 1,
+      title: item['title'],
+      link: item['url'],
+      snippet: item['description']
+    }
+  end
+  
+  {
+    query: @query,
+    engine: 'brave',
+    total_results: results.count,
+    organic_results: results
+  }
+end
 
   def scrape_duckduckgo
     url = "https://html.duckduckgo.com/html/?q=#{URI.encode_www_form_component(@query)}"
