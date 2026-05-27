@@ -1,7 +1,8 @@
 #!/bin/bash -e
 
-if [ "${1}" = "./bin/rails" ] && [ "${2}" = "server" ]; then
-  ./bin/rails db:prepare
-fi
+# Ensure database is created and migrated before any command runs.
+# db:prepare is idempotent: it creates the DB if missing and runs
+# any pending migrations.
+./bin/rails db:prepare
 
 exec "${@}"
