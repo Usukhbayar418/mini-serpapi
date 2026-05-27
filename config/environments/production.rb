@@ -69,7 +69,7 @@ Rails.application.configure do
   # Enable DNS rebinding protection and other `Host` header attacks.
   config.hosts = [
     /.*\.onrender\.com/,     # Allow requests from example.com
-    "localhost",             # Allow requests from localhost
+    "localhost"             # Allow requests from localhost
     ]
   #
   # Skip DNS rebinding protection for the default health check endpoint.

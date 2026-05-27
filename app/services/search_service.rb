@@ -1,31 +1,31 @@
-require 'httparty'
-require 'nokogiri'
-require 'uri'
+require "httparty"
+require "nokogiri"
+require "uri"
 
 class SearchService
   HEADERS = {
-    'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept-Language' => 'en-US,en;q=0.9'
+    "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept-Language" => "en-US,en;q=0.9"
   }.freeze
 
-  def initialize(query, engine = 'brave')
+  def initialize(query, engine = "brave")
     @query = query
     @engine = engine
   end
 
   def search
     case @engine
-    when 'brave'
+    when "brave"
       scrape_brave
-    when 'images'
+    when "images"
       scrape_brave_images
-    when 'google', 'bing'
+    when "google", "bing"
       scrape_duckduckgo
-    when 'duckduckgo'
+    when "duckduckgo"
       scrape_duckduckgo
-    when 'gogo'
+    when "gogo"
       scrape_gogo
-    when 'news'
+    when "news"
       scrape_news_mn
     else
       { error: "Unknown engine: #{@engine}" }
@@ -37,56 +37,56 @@ class SearchService
   def scrape_brave
   url = "https://api.search.brave.com/res/v1/web/search?q=#{URI.encode_www_form_component(@query)}&count=10"
   response = HTTParty.get(url, headers: HEADERS.merge({
-    'Accept' => 'application/json',
-    'X-Subscription-Token' => ENV['BRAVE_API_KEY']
+    "Accept" => "application/json",
+    "X-Subscription-Token" => ENV["BRAVE_API_KEY"]
   }))
-  
+
   data = response.parsed_response
-  web_results = data.dig('web', 'results') || []
-  
+  web_results = data.dig("web", "results") || []
+
   results = web_results.each_with_index.map do |item, i|
     {
       position: i + 1,
-      title: item['title'],
-      link: item['url'],
-      snippet: item['description']
+      title: item["title"],
+      link: item["url"],
+      snippet: item["description"]
     }
   end
-  
+
   {
     query: @query,
-    engine: 'brave',
+    engine: "brave",
     total_results: results.count,
     organic_results: results
   }
 end
 
-def scrape_brave_images 
+def scrape_brave_images
   url = "https://api.search.brave.com/res/v1/images/search?q=#{URI.encode_www_form_component(@query)}&count=10"
   response = HTTParty.get(url, headers: HEADERS.merge({
-    'Accept' => 'application/json',
-    'X-Subscription-Token' => ENV['BRAVE_API_KEY']
+    "Accept" => "application/json",
+    "X-Subscription-Token" => ENV["BRAVE_API_KEY"]
   }))
 
   data = response.parsed_response
-  results_raw = data['results'] || []
+  results_raw = data["results"] || []
 
   results = results_raw.each_with_index.map do |item, i|
     {
       position: i + 1,
-      title: item['title'],
-      image: item.dig('properties', 'url'),
-      thumbnail: item.dig('thumbnail', 'src'),
-      source_page: item['url'],
-      source: item['source'],
-      width: item.dig('properties', 'width'),
-      height: item.dig('properties', 'height'),
+      title: item["title"],
+      image: item.dig("properties", "url"),
+      thumbnail: item.dig("thumbnail", "src"),
+      source_page: item["url"],
+      source: item["source"],
+      width: item.dig("properties", "width"),
+      height: item.dig("properties", "height")
     }
   end
 
   {
     query: @query,
-    engine: 'images',
+    engine: "images",
     total_results: results.count,
     image_results: results
   }
@@ -100,10 +100,10 @@ end
     results = []
     position = 1
 
-    doc.css('.result').each do |result|
-      title   = result.css('.result__title').first&.text&.strip
-      link    = result.css('.result__url').first&.text&.strip
-      snippet = result.css('.result__snippet').first&.text&.strip
+    doc.css(".result").each do |result|
+      title   = result.css(".result__title").first&.text&.strip
+      link    = result.css(".result__url").first&.text&.strip
+      snippet = result.css(".result__snippet").first&.text&.strip
 
       next if title.nil? || link.nil?
 
@@ -111,21 +111,21 @@ end
         position: position,
         title: title,
         link: "https://#{link}",
-        snippet: snippet || ''
+        snippet: snippet || ""
       }
       position += 1
     end
 
     {
       query: @query,
-      engine: 'duckduckgo',
+      engine: "duckduckgo",
       total_results: results.count,
       organic_results: results
     }
   end
 
   def scrape_gogo
-    date = Time.now.strftime('%Y-%m-%d')
+    date = Time.now.strftime("%Y-%m-%d")
     encoded_date = URI.encode_www_form_component("#{date} 23:59:59")
     url = "https://gogo.mn/cache/news-shinemedee?size=20&lastNewsDate=#{encoded_date}"
 
@@ -133,22 +133,22 @@ end
     articles = []
 
     if response.parsed_response.is_a?(Hash)
-      articles = response.parsed_response['shinemedee_list'] || []
+      articles = response.parsed_response["shinemedee_list"] || []
     end
 
     results = []
     articles.first(10).each_with_index do |article, i|
       results << {
         position: i + 1,
-        title: article['title'] || '',
+        title: article["title"] || "",
         link: "https://gogo.mn/r/#{article['id']}",
-        snippet: article['short_content'] || ''
+        snippet: article["short_content"] || ""
       }
     end
 
     {
       query: @query,
-      engine: 'gogo',
+      engine: "gogo",
       total_results: results.count,
       organic_results: results
     }
@@ -164,10 +164,10 @@ end
 
     results = []
     articles.each_with_index do |article, i|
-      title   = article.dig('title', 'rendered') || ''
-      link    = article['link'] || ''
-      excerpt = article.dig('excerpt', 'rendered') || ''
-      snippet = excerpt.gsub(/<[^>]+>/, '').strip
+      title   = article.dig("title", "rendered") || ""
+      link    = article["link"] || ""
+      excerpt = article.dig("excerpt", "rendered") || ""
+      snippet = excerpt.gsub(/<[^>]+>/, "").strip
 
       results << {
         position: i + 1,
@@ -179,7 +179,7 @@ end
 
     {
       query: @query,
-      engine: 'news.mn',
+      engine: "news.mn",
       total_results: results.count,
       organic_results: results
     }

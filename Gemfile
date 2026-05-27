@@ -4,9 +4,9 @@ source "https://rubygems.org"
 gem "rails", "~> 8.1.3"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
-gem 'httparty'
-gem 'nokogiri'
-gem 'dotenv-rails'
+gem "httparty"
+gem "nokogiri"
+gem "dotenv-rails"
 gem "rspec-rails"
 gem "webmock"
 gem "factory_bot_rails"
