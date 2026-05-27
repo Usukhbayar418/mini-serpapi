@@ -21,7 +21,7 @@ module Api
             SearchHistory.create(
                 query: query,
                 engine: engine,
-                api_key: @api_key,                          
+                api_key: @api_key,
                 results_count: result[:total_results] || 0,
                 duration_ms: duration_ms,
                 ip: request.remote_ip,

@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-    protected 
+    protected
 
     def authenticate_api_key!
         @api_key = request.headers["X-API-Key"]
