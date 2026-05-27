@@ -32,3 +32,12 @@
 # macOS system files
 .DS_Store
 **/.DS_Store
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+
+# Ignore generated SQLite databases.
+/storage/*.sqlite3*
+db/*.sqlite3
+db/*.sqlite3-*

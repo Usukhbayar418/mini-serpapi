@@ -11,6 +11,7 @@ gem "rspec-rails"
 gem "webmock"
 gem "factory_bot_rails"
 gem "rack-attack"
+gem "sqlite3", ">= 2.1"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 # Use Redis adapter to run Action Cable in production
