@@ -1,35 +1,37 @@
 module Api
-    module V1
-        class SearchController < ApplicationController
-            before_action :authenticate_api_key!
-            def index
-                query = params[:q]
-                engine = params[:engine] || "brave"
+  module V1
+    class SearchController < ApplicationController
+      before_action :authenticate_api_key!
 
-                if query.blank?
-                    return render json: { error: "q parameter is required" }, status: 400
-                end
+        def index
+            query = params[:q]
+            engine = params[:engine] || "brave"
 
-                unless %w[google duckduckgo gogo news brave images].include?(engine)
-                    return render json: { error: "engine must be one of: brave, duckduckgo, google, gogo, news, images" }, status: 400
-                end
-
-                result = SearchService.new(query, engine).search
-                render json: result
-
-            rescue StandardError => e
-                render json: { error: e.message }, status: 500
+            if query.blank?
+                return render json: { error: "q parameter is required" }, status: 400
+            end
+            unless %w[google duckduckgo gogo news brave images].include?(engine)
+                return render json: { error: "engine must be one of: brave, duckduckgo, google, gogo, news, images" }, status: 400
             end
 
-            private
+            started_at = Time.now
+            result = SearchService.new(query, engine).search
+            duration_ms = ((Time.now - started_at) * 1000).round
 
-            def authenticate_api_key!
-                api_key = request.headers["X-API-Key"]
-                valid_keys = ENV["API_KEYS"].to_s.split(",").map(&:strip)
-                unless valid_keys.include?(api_key)
-                    render json: { error: "Unauthorized" }, status: :unauthorized
-                end
-            end
-        end
+            SearchHistory.create(
+                query: query,
+                engine: engine,
+                api_key: @api_key,                          
+                results_count: result[:total_results] || 0,
+                duration_ms: duration_ms,
+                ip: request.remote_ip,
+                user_agent: request.user_agent
+            )
+
+        render json: result
+    rescue StandardError => e
+        render json: { error: e.message }, status: 500
     end
+    end
+  end
 end
