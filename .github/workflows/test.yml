@@ -20,5 +20,10 @@ jobs:
         with:
           bundler-cache: true
 
+      - name: Set up test database 
+        run: bin/rails db:test:prepare       
+        env:                                 
+          RAILS_ENV: test       
+
       - name: Run RSpec tests
         run: bundle exec rspec
