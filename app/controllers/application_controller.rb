@@ -2,7 +2,7 @@ class ApplicationController < ActionController::API
     protected
 
     def authenticate_api_key!
-        @api_key = request.headers["X-API-Key"]
+        @api_key = request.headers["X-API-Key"] || params[:api_key]
         valid_keys = ENV["API_KEYS"].to_s.split(",").map(&:strip)
         unless valid_keys.include?(@api_key)
             render json: { error: "Unauthorized" }, status: :unauthorized
