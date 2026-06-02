@@ -12,7 +12,7 @@ Rails.application.routes.draw do
       demo_key: "demo-key-12345",
       docs: "https://github.com/Usukhbayar418/mini-serpapi"
     }.to_json
-    [200, { "Content-Type" => "application/json" }, [body]]
+    [ 200, { "Content-Type" => "application/json" }, [ body ] ]
   }
 
   namespace :api do

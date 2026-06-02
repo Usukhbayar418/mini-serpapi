@@ -107,7 +107,7 @@ GEM
       railties (>= 6.1)
     drb (2.2.3)
     ed25519 (1.4.0)
-    erb (6.0.3)
+    erb (6.0.4)
     erubi (1.13.1)
     factory_bot (6.6.0)
       activesupport (>= 6.1.0)
